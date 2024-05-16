@@ -1,0 +1,37 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: store-vaultk8s-job
+  namespace: store-net
+  annotations:
+    fluxcd.io/automated: "false"
+spec:
+  releaseName: store-vaultk8s-job
+  interval: 1m
+  chart:
+   spec:
+    chart: platforms/shared/charts/bevel-vault-mgmt
+    sourceRef:
+      kind: GitRepository
+      name: flux-dev
+      namespace: flux-dev
+  values:
+    nameOverride: store-vaultk8s-job
+    global:
+      serviceAccountName: vault-auth
+      cluster:
+        cloudNativeServices: false
+        kubernetesUrl: https://34.118.88.109
+      vault:
+        type: hashicorp
+        role: vault-role
+        address: http://vault.ziitrus.com
+        authPath: devstore
+        network: fabric
+        secretEngine: store
+        secretPrefix: "data/store"
+        tls:
+    image:
+      repository: ghcr.io/hyperledger/bevel-alpine
+      tag: latest
+      pullSecret: "regcred"
